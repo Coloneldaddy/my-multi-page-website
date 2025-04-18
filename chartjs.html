@@ -12,24 +12,26 @@
         th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
         tr { cursor: pointer; }
         tr:hover { background-color: #f2f2f2; }
-        .active { background-color: #D3E5FF !important; }
+        /* Az inline .active szabályt eltávolítottuk, hogy a style.css-ben megadott stílus érvényesüljön */
     </style>
 </head>
 <body>
     <header>
         <h1>ChartJS Diagram</h1>
     </header>
-    <!-- Top-level navigation menu -->
+    <!-- Top-level navigációs menü -->
     <nav class="top-menu">
         <ul>
-            <li><a href="index.html">Kezdőlap</a></li>
+            <li><a href="index.html" class="active">Kezdőlap</a></li>
             <li><a href="crud.html">CRUD Táblázat</a></li>
             <li><a href="html5.html">HTML5 API Példák</a></li>
-            <li><a href="chartjs.html" class="active">ChartJS Diagram</a></li>
+            <li><a href="chartjs.html">ChartJS Diagram</a></li>
             <li><a href="ajax.html">AJAX menü</a></li>
+            <li><a href="oojs.html">OOJS Menü</a></li>
+            <li><a href="react.html">React Menü</a></li>
         </ul>
     </nav>
-    <!-- 5x5 number table -->
+    <!-- 5x5-ös számokat tartalmazó táblázat -->
     <section>
         <table id="dataTable">
             <thead>
@@ -81,15 +83,15 @@
         </table>
     </section>
     
-    <!-- Canvas for ChartJS -->
+    <!-- Canvas a ChartJS diagramhoz -->
     <section>
         <canvas id="myChart" width="600" height="400"></canvas>
     </section>
     
-    <!-- Load Chart.js from CDN -->
+    <!-- ChartJS betöltése CDN-ről -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Initialize the ChartJS line chart with empty data
+        // A ChartJS vonaldiagram inicializálása üres adatokkal
         const ctx = document.getElementById('myChart').getContext('2d');
         let myChart = new Chart(ctx, {
             type: 'line',
@@ -114,21 +116,21 @@
             }
         });
         
-        // Function to update the chart with new data from a table row
+        // Függvény, amely frissíti a diagramot egy adott táblázatsorból érkező adatokkal
         function updateChart(data) {
             myChart.data.datasets[0].data = data;
             myChart.update();
         }
         
-        // Add click event listener to each row of the table
+        // Eseménykezelés: kattintásra a táblázatsor adataival frissíti a diagramot
         const tableRows = document.querySelectorAll("#dataTable tbody tr");
         tableRows.forEach(row => {
             row.addEventListener("click", function() {
-                // Remove active class from all rows
+                // Az összes sorból eltávolítjuk az aktív osztályt
                 tableRows.forEach(r => r.classList.remove("active"));
-                // Add active class for the selected row
+                // Az aktív osztályt hozzáadjuk a kiválasztott sorhoz
                 this.classList.add("active");
-                // Get data values from each cell in the row
+                // Az adott sor celláiból számértékeket nyerünk
                 const data = Array.from(this.querySelectorAll("td")).map(td => Number(td.textContent));
                 updateChart(data);
             });
