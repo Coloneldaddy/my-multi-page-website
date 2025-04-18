@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>HTML5 API Példák</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Basic styling for HTML5 API examples */
+        body { font-family: Arial, sans-serif; }
+        nav.top-menu ul { list-style: none; padding: 0; }
+        nav.top-menu li { display: inline; margin-right: 15px; }
+        section { padding: 15px; margin-bottom: 20px; border: 1px solid #ddd; }
+        /* Internal HTML5 navigation */
+        #html5Menu ul { list-style: none; padding: 0; }
+        #html5Menu li { display: inline; margin-right: 10px; }
+        .example-section { border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>HTML5 API Példák</h1>
+    </header>
+    <!-- Top-level navigation menu -->
+    <nav class="top-menu">
+        <ul>
+            <li><a href="index.html">Kezdőlap</a></li>
+            <li><a href="crud.html">CRUD Táblázat</a></li>
+            <li><a href="html5.html" class="active">HTML5 API Példák</a></li>
+        </ul>
+    </nav>
+    <section>
+        <!-- Internal navigation for HTML5 examples -->
+        <nav id="html5Menu">
+            <ul>
+                <li><a href="#webstorage">Web Storage</a></li>
+                <li><a href="#webworkers">Web Workers</a></li>
+                <li><a href="#sse">SSE</a></li>
+                <li><a href="#geolocation">Geolocation</a></li>
+                <li><a href="#dragndrop">Drag and Drop</a></li>
+                <li><a href="#canvas">Canvas</a></li>
+                <li><a href="#svg">SVG</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Web Storage API -->
+        <section id="webstorage" class="example-section">
+            <h3>Web Storage</h3>
+            <p>Példa: adatok mentése és betöltése a localStorage használatával.</p>
+            <button id="saveStorage">Adatok mentése</button>
+            <button id="loadStorage">Adatok betöltése</button>
+            <pre id="storageResult"></pre>
+            <script>
+                document.getElementById('saveStorage').addEventListener('click', function() {
+                    localStorage.setItem('myKey', 'Ez egy példa érték');
+                    alert('Adatok mentve!');
+                });
+                document.getElementById('loadStorage').addEventListener('click', function() {
+                    const data = localStorage.getItem('myKey') || 'Nincs adat tárolva';
+                    document.getElementById('storageResult').textContent = data;
+                });
+            </script>
+        </section>
+        
+        <!-- Web Workers -->
+        <section id="webworkers" class="example-section">
+            <h3>Web Workers</h3>
+            <p>Példa egy egyszerű Web Worker futtatására.</p>
+            <button id="startWorker">Worker indítása</button>
+            <p id="workerResult"></p>
+            <script>
+                let worker;
+                document.getElementById('startWorker').addEventListener('click', function() {
+                    if(window.Worker) {
+                        if(!worker) {
+                            worker = new Worker('assets/js/worker.js');
+                            worker.onmessage = function(e) {
+                                document.getElementById('workerResult').textContent = 'Worker üzenet: ' + e.data;
+                            };
+                        }
+                        worker.postMessage('Kezdés');
+                    } else {
+                        alert('A böngésző nem támogatja a Web Workereket.');
+                    }
+                });
+            </script>
+        </section>
+        
+        <!-- Server-Sent Events -->
+        <section id="sse" class="example-section">
+            <h3>Server-Sent Events (SSE)</h3>
+            <p>Példa: SSE működéséhez szükség van szerveroldali kódra.</p>
+            <div id="sseResult"></div>
+            <script>
+                if(typeof(EventSource) !== "undefined") {
+                    const source = new EventSource("sse.php");
+                    source.onmessage = function(event) {
+                        document.getElementById("sseResult").innerHTML += "Üzenet: " + event.data + "<br>";
+                    };
+                } else {
+                    document.getElementById("sseResult").innerHTML = "SSE nem támogatott.";
+                }
+            </script>
+        </section>
+        
+        <!-- Geolocation API -->
+        <section id="geolocation" class="example-section">
+            <h3>Geolocation API</h3>
+            <p>Példa: az aktuális pozíció lekérése.</p>
+            <button id="getLocation">Pozíció lekérése</button>
+            <p id="locationResult"></p>
+            <script>
+                document.getElementById('getLocation').addEventListener('click', function() {
+                    if(navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function(position) {
+                            document.getElementById('locationResult').textContent = 
+                                'Szélesség: ' + position.coords.latitude + ', Hosszúság: ' + position.coords.longitude;
+                        }, function(error) {
+                            document.getElementById('locationResult').textContent = 'Hiba: ' + error.message;
+                        });
+                    } else {
+                        document.getElementById('locationResult').textContent = 'Geolocation nem támogatott.';
+                    }
+                });
+            </script>
+        </section>
+        
+        <!-- Drag and Drop API -->
+        <section id="dragndrop" class="example-section">
+            <h3>Drag and Drop API</h3>
+            <p>Példa egy egyszerű Drag and Drop műveletre.</p>
+            <div id="dragZone" style="width:200px;height:100px;border:1px solid #ccc; text-align:center; line-height:100px;" draggable="true">
+                Húzz ide
+            </div>
+            <div id="dropZone" style="width:200px;height:100px;border:1px solid #000; margin-top:10px; text-align:center; line-height:100px;">
+                Dobd ide
+            </div>
+            <script>
+                const dragZone = document.getElementById('dragZone');
+                const dropZone = document.getElementById('dropZone');
+                dragZone.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', 'Át lett húzva!');
+                });
+                dropZone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                });
+                dropZone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    dropZone.textContent = e.dataTransfer.getData('text/plain');
+                });
+            </script>
+        </section>
+        
+        <!-- Canvas -->
+        <section id="canvas" class="example-section">
+            <h3>Canvas</h3>
+            <p>Példa egy egyszerű rajzolásra a canvas segítségével.</p>
+            <canvas id="myCanvas" width="300" height="150" style="border:1px solid #000;"></canvas>
+            <script>
+                const canvas = document.getElementById('myCanvas');
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = 'green';
+                ctx.fillRect(10, 10, 100, 50);
+            </script>
+        </section>
+        
+        <!-- SVG -->
+        <section id="svg" class="example-section">
+            <h3>SVG</h3>
+            <p>Példa egy egyszerű SVG rajzolásra.</p>
+            <svg width="200" height="100">
+                <rect width="200" height="100" style="fill:blue;stroke-width:3;stroke:black" />
+                Sorry, your browser does not support inline SVG.
+            </svg>
+        </section>
+    </section>
+    
+    <footer>
+        <p>Készítette: [Név] - [Neptun kód]</p>
+    </footer>
+</body>
+</html>

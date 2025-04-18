@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>AJAX menü</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body { font-family: Arial, sans-serif; }
+        nav.top-menu ul { list-style: none; padding: 0; }
+        nav.top-menu li { display: inline; margin-right: 15px; }
+        section { padding: 15px; margin-bottom: 20px; border: 1px solid #ddd; }
+        input { margin: 5px 0; }
+        button { margin: 5px 0; }
+        .feedback { color: green; margin-top: 5px; }
+        .error { color: red; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AJAX menü</h1>
+    </header>
+    <!-- Top-level navigation menu -->
+    <nav class="top-menu">
+        <ul>
+            <li><a href="index.html">Kezdőlap</a></li>
+            <li><a href="crud.html">CRUD Táblázat</a></li>
+            <li><a href="html5.html">HTML5 API Példák</a></li>
+            <li><a href="chartjs.html">ChartJS Diagram</a></li>
+            <li><a href="ajax.html" class="active">AJAX menü</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Read Section -->
+    <section>
+        <h2>Adatok megjelenítése (Read)</h2>
+        <button id="readDataBtn">Adatok lekérése</button>
+        <div id="dataDisplay"></div>
+        <div id="heightStats"></div>
+    </section>
+    
+    <!-- Create / Update Section -->
+    <section>
+        <h2>Create / Update</h2>
+        <form id="dataForm">
+            <label for="dataInput">Adat (max 30 karakter):</label><br>
+            <input type="text" id="dataInput" maxlength="30" required>
+            <br>
+            <label for="updateId">Frissítendő ID:</label><br>
+            <input type="number" id="updateId">
+            <button type="button" id="getDataForId">Lekér adatot ID alapján</button>
+            <br>
+            <button type="submit" id="createUpdateBtn">Létrehozás / Frissítés</button>
+        </form>
+        <div id="formFeedback"></div>
+    </section>
+    
+    <!-- Delete Section -->
+    <section>
+        <h2>Törlés (Delete)</h2>
+        <label for="deleteId">Törlendő ID:</label><br>
+        <input type="number" id="deleteId">
+        <button id="deleteBtn">Törlés</button>
+        <div id="deleteFeedback"></div>
+    </section>
+    
+    <footer>
+        <p>Készítette: [Név] - [Neptun kód]</p>
+    </footer>
+    
+    <script src="ajax.js"></script>
+</body>
+</html>

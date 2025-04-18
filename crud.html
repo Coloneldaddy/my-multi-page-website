@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD Táblázat</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Basic styling for CRUD page */
+        body { font-family: Arial, sans-serif; }
+        nav.top-menu ul { list-style: none; padding: 0; }
+        nav.top-menu li { display: inline; margin-right: 15px; }
+        section { padding: 15px; margin-bottom: 20px; border: 1px solid #ddd; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { cursor: pointer; background-color: #f2f2f2; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CRUD Táblázat</h1>
+    </header>
+    <!-- Top-level navigation menu -->
+    <nav class="top-menu">
+        <ul>
+            <li><a href="index.html">Kezdőlap</a></li>
+            <li><a href="crud.html" class="active">CRUD Táblázat</a></li>
+            <li><a href="html5.html">HTML5 API Példák</a></li>
+        </ul>
+    </nav>
+    <section>
+        <!-- Form for adding/updating rows -->
+        <form id="crudForm">
+            <input type="hidden" id="rowId" value="">
+            <label for="name">Név:</label>
+            <input type="text" id="name" required minlength="2" maxlength="50">
+            <label for="age">Életkor:</label>
+            <input type="number" id="age" required min="1" max="120">
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+            <button type="submit" id="submitBtn">Hozzáadás</button>
+            <button type="button" id="cancelEdit" class="hidden">Mégse</button>
+        </form>
+        <br>
+        <!-- Filter input -->
+        <label for="tableFilter">Szűrés:</label>
+        <input type="text" id="tableFilter" placeholder="Keresés...">
+        <br><br>
+        <!-- Data table with a header row-->
+        <table id="crudTable">
+            <thead>
+                <tr>
+                    <th data-column="id">ID</th>
+                    <th data-column="name">Név</th>
+                    <th data-column="age">Életkor</th>
+                    <th data-column="email">Email</th>
+                    <th>Akciók</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be inserted by JavaScript -->
+            </tbody>
+        </table>
+    </section>
+    <footer>
+        <p>Készítette: [Név] - [Neptun kód]</p>
+    </footer>
+    
+    <!-- CRUD Scripts -->
+    <script>
+        let nextId = 1;
+        const form = document.getElementById('crudForm');
+        const tableBody = document.querySelector('#crudTable tbody');
+        const cancelEditBtn = document.getElementById('cancelEdit');
+        const submitBtn = document.getElementById('submitBtn');
+        const filterInput = document.getElementById('tableFilter');
+    
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const idField = document.getElementById('rowId');
+            const name = document.getElementById('name').value.trim();
+            const age = document.getElementById('age').value;
+            const email = document.getElementById('email').value.trim();
+            
+            if (idField.value) {
+                // Update an existing row
+                const row = document.getElementById('row-' + idField.value);
+                row.children[1].textContent = name;
+                row.children[2].textContent = age;
+                row.children[3].textContent = email;
+                idField.value = '';
+                submitBtn.textContent = 'Hozzáadás';
+                cancelEditBtn.classList.add('hidden');
+            } else {
+                // Create a new row
+                const row = document.createElement('tr');
+                row.setAttribute('id', 'row-' + nextId);
+                row.innerHTML = `
+                    <td>${nextId}</td>
+                    <td>${name}</td>
+                    <td>${age}</td>
+                    <td>${email}</td>
+                    <td>
+                        <button onclick="editRow(${nextId})">Szerkeszt</button>
+                        <button onclick="deleteRow(${nextId})">Töröl</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+                nextId++;
+            }
+            form.reset();
+        });
+    
+        cancelEditBtn.addEventListener('click', function() {
+            document.getElementById('rowId').value = '';
+            form.reset();
+            submitBtn.textContent = 'Hozzáadás';
+            cancelEditBtn.classList.add('hidden');
+        });
+    
+        window.editRow = function(id) {
+            const row = document.getElementById('row-' + id);
+            document.getElementById('rowId').value = id;
+            document.getElementById('name').value = row.children[1].textContent;
+            document.getElementById('age').value = row.children[2].textContent;
+            document.getElementById('email').value = row.children[3].textContent;
+            submitBtn.textContent = 'Frissítés';
+            cancelEditBtn.classList.remove('hidden');
+        };
+    
+        window.deleteRow = function(id) {
+            const row = document.getElementById('row-' + id);
+            if (confirm('Biztosan törli a sort?')) {
+                row.remove();
+            }
+        };
+    
+        // Sorting functionality
+        document.querySelectorAll('#crudTable th[data-column]').forEach(header => {
+            header.addEventListener('click', () => {
+                const column = header.getAttribute('data-column');
+                sortTableByColumn(column);
+            });
+        });
+    
+        function sortTableByColumn(column) {
+            const rowsArray = Array.from(tableBody.querySelectorAll('tr'));
+            const colIndex = getColumnIndex(column);
+            rowsArray.sort((a, b) => {
+                const aText = a.children[colIndex].textContent.trim().toLowerCase();
+                const bText = b.children[colIndex].textContent.trim().toLowerCase();
+                if (!isNaN(aText) && !isNaN(bText)) {
+                    return Number(aText) - Number(bText);
+                }
+                return aText.localeCompare(bText);
+            });
+            rowsArray.forEach(row => tableBody.appendChild(row));
+        }
+    
+        function getColumnIndex(column) {
+            switch(column) {
+                case 'id': return 0;
+                case 'name': return 1;
+                case 'age': return 2;
+                case 'email': return 3;
+                default: return 0;
+            }
+        }
+    
+        // Filtering functionality
+        filterInput.addEventListener('input', function() {
+            const filterValue = this.value.toLowerCase();
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                let found = false;
+                cells.forEach(cell => {
+                    if (cell.textContent.toLowerCase().includes(filterValue)) {
+                        found = true;
+                    }
+                });
+                row.style.display = found ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

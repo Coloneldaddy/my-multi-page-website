@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>OOJS Menü</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+        }
+        nav.top-menu ul { 
+            list-style: none; 
+            padding: 0; 
+        }
+        nav.top-menu li { 
+            display: inline; 
+            margin-right: 15px; 
+        }
+        section { 
+            padding: 15px; 
+            margin-bottom: 20px; 
+            border: 1px solid #ddd; 
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>OOJS Menü</h1>
+    </header>
+    <!-- Top-level navigation menu -->
+    <nav class="top-menu">
+        <ul>
+            <li><a href="index.html">Kezdőlap</a></li>
+            <li><a href="crud.html">CRUD Táblázat</a></li>
+            <li><a href="html5.html">HTML5 API Példák</a></li>
+            <li><a href="chartjs.html">ChartJS Diagram</a></li>
+            <li><a href="ajax.html">AJAX menü</a></li>
+            <li><a href="oojs.html" class="active">OOJS Menü</a></li>
+        </ul>
+    </nav>
+    <section>
+        <h2>Objektumorientált JavaScript Alkalmazás</h2>
+        <div id="app"></div>
+    </section>
+    <footer>
+        <p>Készítette: [Név] - [Neptun kód]</p>
+    </footer>
+    
+    <script>
+        // Base class using constructor and a method
+        class Person {
+            constructor(name, age) {
+                this.name = name;
+                this.age = age;
+            }
+            getInfo() {
+                return `Name: ${this.name}, Age: ${this.age}`;
+            }
+        }
+        
+        // Subclass extending Person using super
+        class Student extends Person {
+            constructor(name, age, major) {
+                super(name, age);
+                this.major = major;
+            }
+            getInfo() {
+                return `${super.getInfo()}, Major: ${this.major}`;
+            }
+        }
+        
+        // Application class to render content into the DOM using document.body.appendChild
+        class App {
+            constructor(containerId) {
+                this.container = document.getElementById(containerId);
+            }
+            render() {
+                // Create instances of Person and Student
+                const person = new Person("John Doe", 30);
+                const student = new Student("Jane Smith", 22, "Computer Science");
+                
+                // Create a paragraph element for Person
+                const personElem = document.createElement("p");
+                personElem.textContent = person.getInfo();
+                this.container.appendChild(personElem);
+                
+                // Create a paragraph element for Student
+                const studentElem = document.createElement("p");
+                studentElem.textContent = student.getInfo();
+                this.container.appendChild(studentElem);
+            }
+        }
+        
+        // Instantiate the App and render the content
+        const myApp = new App("app");
+        myApp.render();
+    </script>
+</body>
+</html>
