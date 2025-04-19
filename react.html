@@ -4,30 +4,11 @@
     <meta charset="UTF-8">
     <title>React Menü</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-        }
-        nav.top-menu ul { 
-            list-style: none; 
-            padding: 0; 
-        }
-        nav.top-menu li { 
-            display: inline; 
-            margin-right: 15px; 
-        }
-        section { 
-            padding: 15px; 
-            margin-bottom: 20px; 
-            border: 1px solid #ddd; 
-        }
-    </style>
 </head>
 <body>
     <header>
         <h1>React Menü</h1>
     </header>
-    <!-- Top-level navigációs menü -->
     <nav class="top-menu">
         <ul>
             <li><a href="index.html">Kezdőlap</a></li>
@@ -40,79 +21,166 @@
         </ul>
     </nav>
     <section>
-        <!-- A React alkalmazást tartalmazó konténer -->
         <div id="root"></div>
     </section>
     <footer>
         <p>Készítette: [Kovács Gyula] - [NUK-911]</p>
     </footer>
-    
-    <!-- Local React and ReactDOM (ensure the paths are correct or update as needed) -->
-    <script src="assets/js/react.development.js"></script>
-    <script src="assets/js/react-dom.development.js"></script>
-    <!-- React application entry point -->
-    <script src="index.js"></script>
+
+    <!-- React és ReactDOM CDN-en keresztül -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel Standalone -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- React alkalmazás -->
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Calculator Component
+        function Calculator() {
+            const [num1, setNum1] = useState("");
+            const [num2, setNum2] = useState("");
+            const [result, setResult] = useState(null);
+
+            const calculate = (operation) => {
+                const a = parseFloat(num1);
+                const b = parseFloat(num2);
+                if (isNaN(a) || isNaN(b)) {
+                    setResult("Hibás bemenet!");
+                    return;
+                }
+
+                switch (operation) {
+                    case "add":
+                        setResult(a + b);
+                        break;
+                    case "subtract":
+                        setResult(a - b);
+                        break;
+                    case "multiply":
+                        setResult(a * b);
+                        break;
+                    case "divide":
+                        setResult(b !== 0 ? a / b : "Nem osztható nullával!");
+                        break;
+                    default:
+                        setResult("Ismeretlen művelet!");
+                }
+            };
+
+            return (
+                <div>
+                    <h2>Calculator</h2>
+                    <input
+                        type="number"
+                        value={num1}
+                        onChange={(e) => setNum1(e.target.value)}
+                        placeholder="Szám 1"
+                    />
+                    <input
+                        type="number"
+                        value={num2}
+                        onChange={(e) => setNum2(e.target.value)}
+                        placeholder="Szám 2"
+                    />
+                    <div>
+                        <button onClick={() => calculate("add")}>Összeadás</button>
+                        <button onClick={() => calculate("subtract")}>Kivonás</button>
+                        <button onClick={() => calculate("multiply")}>Szorzás</button>
+                        <button onClick={() => calculate("divide")}>Osztás</button>
+                    </div>
+                    {result !== null && <p>Eredmény: {result}</p>}
+                </div>
+            );
+        }
+
+        // TicTacToe Component
+        function TicTacToe() {
+            const initialBoard = Array(9).fill(null);
+            const [board, setBoard] = useState(initialBoard);
+            const [isXNext, setIsXNext] = useState(true);
+
+            const calculateWinner = (squares) => {
+                const lines = [
+                    [0, 1, 2],
+                    [3, 4, 5],
+                    [6, 7, 8],
+                    [0, 3, 6],
+                    [1, 4, 7],
+                    [2, 5, 8],
+                    [0, 4, 8],
+                    [2, 4, 6]
+                ];
+                for (const line of lines) {
+                    const [a, b, c] = line;
+                    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+                        return squares[a];
+                    }
+                }
+                return null;
+            };
+
+            const handleClick = (index) => {
+                if (board[index] || calculateWinner(board)) {
+                    return;
+                }
+                const newBoard = board.slice();
+                newBoard[index] = isXNext ? "X" : "O";
+                setBoard(newBoard);
+                setIsXNext(!isXNext);
+            };
+
+            const renderSquare = (index) => (
+                <button
+                    onClick={() => handleClick(index)}
+                    style={{ width: "60px", height: "60px", fontSize: "24px" }}
+                >
+                    {board[index]}
+                </button>
+            );
+
+            const winner = calculateWinner(board);
+
+            return (
+                <div>
+                    <h2>Tic Tac Toe</h2>
+                    <div
+                        style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(3, 60px)",
+                            gap: "5px"
+                        }}
+                    >
+                        {board.map((_, index) => renderSquare(index))}
+                    </div>
+                    {winner ? <p>Nyertes: {winner}</p> : <p>Következő: {isXNext ? "X" : "O"}</p>}
+                    <button onClick={() => { setBoard(initialBoard); setIsXNext(true); }}>
+                        Új játék
+                    </button>
+                </div>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            const [activeApp, setActiveApp] = useState("calculator");
+
+            return (
+                <div>
+                    <nav style={{ marginBottom: "20px" }}>
+                        <button onClick={() => setActiveApp("calculator")}>Calculator</button>
+                        <button onClick={() => setActiveApp("tictactoe")}>Tic Tac Toe</button>
+                    </nav>
+                    <section>
+                        {activeApp === "calculator" && <Calculator />}
+                        {activeApp === "tictactoe" && <TicTacToe />}
+                    </section>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(<App />);
+    </script>
 </body>
 </html>
-``` 
-
-This file now sets up a proper React mounting point at the `<div id="root"></div>` element and loads your React app from `index.js`. Ensure that your React build (or development files) are available locally under the referenced paths.<!-- filepath: c:\Users\Dell Latitude E5470\webprogi\my-multi-page-website\react.html -->
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <title>React Menü</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-        }
-        nav.top-menu ul { 
-            list-style: none; 
-            padding: 0; 
-        }
-        nav.top-menu li { 
-            display: inline; 
-            margin-right: 15px; 
-        }
-        section { 
-            padding: 15px; 
-            margin-bottom: 20px; 
-            border: 1px solid #ddd; 
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>React Menü</h1>
-    </header>
-    <!-- Top-level navigációs menü -->
-    <nav class="top-menu">
-        <ul>
-            <li><a href="index.html">Kezdőlap</a></li>
-            <li><a href="crud.html">CRUD Táblázat</a></li>
-            <li><a href="html5.html">HTML5 API Példák</a></li>
-            <li><a href="chartjs.html">ChartJS Diagram</a></li>
-            <li><a href="ajax.html">AJAX menü</a></li>
-            <li><a href="oojs.html">OOJS Menü</a></li>
-            <li><a href="react.html" class="active">React Menü</a></li>
-        </ul>
-    </nav>
-    <section>
-        <!-- A React alkalmazást tartalmazó konténer -->
-        <div id="root"></div>
-    </section>
-    <footer>
-        <p>Készítette: [Kovács Gyula] - [NUK-911]</p>
-    </footer>
-    
-    <!-- Local React and ReactDOM (ensure the paths are correct or update as needed) -->
-   <!-- React és ReactDOM CDN-en keresztül -->
-<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- React application entry point -->
-    <script src="index.js"></script>
-</body>
-</html>
-
-
