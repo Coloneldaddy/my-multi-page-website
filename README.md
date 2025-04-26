@@ -34,7 +34,6 @@ my-multi-page-website
 - JavaScript functionality for interactive elements
 
 ## Creators
-- [Creator Name 1] - Neptun Code 1
-- [Creator Name 2] - Neptun Code 2
+- [Kovács Gyula] - NUK-911
 
 Feel free to explore the project and modify it as needed!
